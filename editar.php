@@ -1,43 +1,36 @@
 <?php
-require 'config.php'; //incluo os dados da conexão com o banco de dados 
+require 'config.php';
+require 'dao/UsuarioDAOMysql.php'; //puxando meu usario dao
+  
+$usuarioDao = new UsuarioDAOMysql($pdo); //instancio minha classe dao
 
-$info = []; //Declaro uma lista vazia que irá receber os valores do usuário a ser editado
+$usuario = false; 
 $id = filter_input(INPUT_GET, 'id'); //irá receber o id que virá pela url
 
 if($id){
-    $sql = $pdo->prepare("SELECT * FROM usuarios WHERE idusuarios = :id"); //consulta sql 
-    $sql->bindValue(':id', $id); 
-    
-    $sql->execute(); //executa a consulta
+    $usuario = $usuarioDao->findById($id); //Verifica se o id existe e caso exista    
+}
 
-    //verifica se a consulta retornou uma tabela com a quantidade de linahs maior que zero
-    if($sql->rowCount()>0){
-        $info = $sql->fetch(PDO::FETCH_ASSOC); //o fetch só pega o primeiro resultado retornado
-    }else{
-        header('location:index.php'); //retorna para a página inicial
-        exit; 
-    }
-}else{
-    header('location:index.php'); //retorna para a página inicial
+if($usuario === false ){
+    header("Location: index.php");
     exit;
 }
+
 ?>
-
-
 
 <h1>Editar Usuário</h1>
 
 <form method="POST" action="editar_action.php">
-    <input type="hidden" name="id" value="<?=$info['idusuarios'];?>" />
+    <input type="hidden" name="id" value="<?=$usuario->getId();?>" />
     <label>
         NOME:</br>
-        <input type="text" name="name" value=<?=$info['nome'];?> />
+        <input type="text" name="name" value=<?=$usuario->getNome();?> />
     </label>
     </br>
     </br>
     <label>
         E-MAIL:</br>
-        <input type="email" name="email" value=<?=$info['email'];?> />
+        <input type="email" name="email" value=<?=$usuario->getEmail();?> />
     </label>
     </br>
     </br> 
