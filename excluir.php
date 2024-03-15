@@ -1,13 +1,14 @@
 <?php
-require 'config.php'; //incluo os dados da conexão com o banco de dados 
+require 'config.php';
+require 'dao/UsuarioDAOMysql.php'; //puxando meu usario dao
+  
+$usuarioDao = new UsuarioDAOMysql($pdo); //instancio minha classe dao
 
 $id = filter_input(INPUT_GET, 'id'); //irá receber o id que virá pela url
 
 if($id){
 
-    $sql = $pdo->prepare("DELETE FROM usuarios WHERE idusuarios = :id");
-    $sql->bindValue(':id', $id);
-    $sql->execute(); //Executa o comando sql
+   $usuarioDao->delete($id);
 
 }
 
